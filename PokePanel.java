@@ -36,6 +36,7 @@ public class PokePanel extends JPanel {
             card.drawBackgroundCard(g, this);
             if (computerlose == false || mylose == false) {
                 card.drawPoke(g, this);
+                card.drawBackgroundCard(g, this);
             }
         }
         g.drawString("玩家牌", 200, 470);
