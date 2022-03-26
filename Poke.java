@@ -1,12 +1,11 @@
 import java.awt.Image;
-
 import java.awt.Toolkit;
 import java.util.Random;
 
 public class Poke {
-    static final int count = 52;
-    static String color[] = { "Hearts", "Clubs", "Diamonds", "Spades" };
-    static String value[] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+    static final int count = 52;  //使用52張牌
+    static String color[] = {"Spades","Diamonds","Clubs","Hearts"}; //4種花色
+    static String value[] = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}; // 1 ~ 13
     private Image cardImage[] = new Image[count];
     static Card card[] = new Card[count];
 
@@ -26,20 +25,19 @@ public class Poke {
             }
         }
     }
+    //洗牌
     public void Shuffle() {
         Random random = new Random();
         for (int i = 0; i < card.length; i++) {
-            int p = random.nextInt(card.length);
+            int p = i + random.nextInt(card.length-i);
             Card temp = card[i];
             card[i] = card[p];
             card[p] = temp;
         }
     }
-
     public Card[] getCard() {
         return Poke.card;
     }
-
     public Card getOneCard(int n) {
         return Poke.card[n - 1];
     }

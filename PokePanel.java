@@ -8,13 +8,14 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class PokePanel extends JPanel {
     Poke poke = new Poke();
-    int MyScore = 0;
-    int ComputerScore = 0;
-    ArrayList myCardList = new ArrayList();
-    ArrayList computerCardList = new ArrayList();
+    int MyScore = 0;  //玩家分數初始化
+    int ComputerScore = 0; //電腦分數初始化
+    ArrayList myCardList = new ArrayList<>(); //玩家的撲克牌存放在陣列裡面
+    ArrayList computerCardList = new ArrayList<>(); //電腦的撲克牌存放在陣列裡面
     boolean mylose = false;
-    boolean computerlose = true;
+    boolean computerlose = false;
     static int n = 1;
+    //用boolean判斷遊戲是否要結束
     public boolean ComputerContinue = true;
 
     public PokePanel() {
@@ -23,57 +24,46 @@ public class PokePanel extends JPanel {
         this.setVisible(true);
         repaint();
     }
-
     public void paint(Graphics g) {
-        super.paint(g);
         g.clearRect(0, 0, this.getWidth(), this.getHeight());
         g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-        g.drawString("電腦牌", 200, 45);
+        g.drawString("電腦", 540, 45);
         for (int i = 0; i < computerCardList.size(); i++) {
             Card card = (Card) computerCardList.get(i);
-            card.setPos(i * 50, 100);
+            card.setPos((i+1) * 35+150, 100);
             card.print();
-            card.drawBackgroundCard(g, this);
             if (computerlose == false || mylose == false) {
-                card.drawPoke(g, this);
                 card.drawBackgroundCard(g, this);
             }
+            if(computerlose == true || mylose == true){
+                card.drawPoke(g, this);
+            }
         }
-        g.drawString("玩家牌", 200, 470);
+        g.drawString("玩家", 540, 530);
         for (int i = 0; i < myCardList.size(); i++) {
             Card card = (Card) myCardList.get(i);
-            card.setPos(i * 50, 300);
+            card.setPos((i+1) *35+150, 350);
             card.print();
             card.drawPoke(g, this);
         }
         System.out.println();
     }
-    //當電腦出牌，玩家可選擇出牌與否
+    //當電腦出牌，玩家選擇出牌與否
     public void MyPlayer() {
         myCardList.add(poke.getOneCard(n));
         computeMyscore();
         repaint();
         IsOrNoShuffle();
+        repaint();
         if (MyScore > 21) {
             mylose = true;
-            JOptionPane.showMessageDialog(null, "電腦贏玩家輸 \n電腦分數 : " + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "電腦贏,玩家出局 \n電腦分數 : " 
+                                                + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
+                                                JOptionPane.INFORMATION_MESSAGE);
             repaint();
         }
     }
-    // 當電腦選擇不出，玩家必須出牌
-    public void MyPlayerMustDraw(){
-        myCardList.add(poke.getOneCard(n));
-        ComputeComputerScore();
-        IsOrNoShuffle();
-        if (MyScore > 21) {
-            mylose = true;
-            JOptionPane.showMessageDialog(null, "電腦贏玩家輸 \n電腦分數 : " + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            repaint();
-        }
-    }
-
+    //計算玩家目前得分
     public void computeMyscore() {
         MyScore = 0;
         for (int i = 0; i < myCardList.size(); i++) {
@@ -81,45 +71,34 @@ public class PokePanel extends JPanel {
             MyScore += card.getCount();
         }
     }
-
-    //當玩家出牌，電腦可選擇出牌與否
+    //當玩家出牌，電腦選擇出牌與否
     public void ComputerPlayer() {
-        ComputeComputerScore();
+        computerCardList.add(poke.getOneCard(n));
+        repaint();
         IsOrNoShuffle();
         repaint();
+        //0、1當作電腦做的選擇
         Random rand = new Random();
-        int randomValue = rand.nextInt() % 2;
-
-        if (ComputerScore > 21) {
-            computerlose = true;
-            ComputerContinue = false;
-            JOptionPane.showMessageDialog(null, "電腦輸玩家贏 \n電腦分數 : " + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            repaint();
-        } else if (randomValue == 1){
+        int randomValue = rand.nextInt(3);
+        System.out.println(randomValue);
+        ComputeComputerScore();
+        //如果分數大於18，電腦選擇停牌
+        if (randomValue == 1){
             ComputerContinue = false;
             JOptionPane.showMessageDialog(null, "電腦選擇停牌不叫", "提示", JOptionPane.INFORMATION_MESSAGE);
-            //電腦選擇不出牌，玩家必須出牌
-            MyPlayerMustDraw();
-            repaint();
+            ComputeAllScore();
         }
-        computerCardList.add(poke.getOneCard(n));
-        repaint();
-    }
-    //當玩家選擇不出，電腦必須出牌
-    public void ComputerPlayerMustDraw(){
-        computerCardList.add(poke.getOneCard(n));
-        ComputeComputerScore();
-        IsOrNoShuffle();
-        if (ComputerScore > 21) {
-            computerlose = true;
+        //計算電腦目前點數
+        else if (ComputerScore > 21) {
+            computerlose = true; 
             ComputerContinue = false;
-            JOptionPane.showMessageDialog(null, "電腦輸玩家贏 \n電腦分數 : " + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "電腦出局,玩家贏 \n電腦分數 : " 
+                                            + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
+                                            JOptionPane.INFORMATION_MESSAGE);
         }
         repaint();
     }
-
+    //計算電腦目前得分
     public void ComputeComputerScore() {
         ComputerScore = 0;
         for (int i = 0; i < computerCardList.size(); i++) {
@@ -127,27 +106,43 @@ public class PokePanel extends JPanel {
             ComputerScore += card.getCount();
         }
     }
-
+    //計算目前得分，用分數判斷是否這局結束
     public void ComputeAllScore() {
         this.computeMyscore();
         this.ComputeComputerScore();
-        if (MyScore > ComputerScore) {
+        if (MyScore > ComputerScore && MyScore <= 21) {
             computerlose = true;
-            JOptionPane.showMessageDialog(null, "玩家贏, 電腦輸 \n電腦分數 : " + ComputerScore + "\n玩家分數 :" + MyScore, "贏了",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } else if (MyScore < ComputerScore) {
-            JOptionPane.showMessageDialog(null, "玩家輸, 電腦贏 \n電腦分數 : " + ComputerScore + "\n玩家分數 :" + MyScore, "輸了",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "電腦出局,玩家贏 \n電腦分數 : " 
+                                               + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
+                                            JOptionPane.INFORMATION_MESSAGE);
+        } else if (MyScore < ComputerScore && ComputerScore <= 21) {
+            JOptionPane.showMessageDialog(null, "電腦贏,玩家出局 \n電腦分數 : " 
+                                               + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
+                                            JOptionPane.INFORMATION_MESSAGE);
             mylose = true;
-        } else {
-            JOptionPane.showMessageDialog(null, "玩家輸, 電腦贏 \n電腦分數 : " + ComputerScore + "\n玩家分數 :" + MyScore, "平手",
-                    JOptionPane.INFORMATION_MESSAGE);
+        } else if(MyScore == ComputerScore) {
+            JOptionPane.showMessageDialog(null, "雙方平手! \n電腦分數 : " 
+                                               + ComputerScore + "\n玩家分數 :" + MyScore, "平手",
+                                            JOptionPane.INFORMATION_MESSAGE);
             mylose = true;
+        }
+        else if(MyScore > 21){
+            JOptionPane.showMessageDialog(null, "電腦贏,玩家出局 \n電腦分數 : " 
+            + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
+                                            JOptionPane.INFORMATION_MESSAGE);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "電腦出局,玩家贏 \n電腦分數 : " 
+            + ComputerScore + "\n玩家分數 : " + MyScore, "提示",
+                                            JOptionPane.INFORMATION_MESSAGE);
         }
         repaint();
     }
-
     public void GameRestart() {
+        /*
+        玩家、電腦分數歸0,
+        重新洗牌
+        */ 
         MyScore = 0;
         ComputerScore = 0;
         mylose = false;

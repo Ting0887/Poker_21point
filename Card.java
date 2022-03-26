@@ -9,18 +9,20 @@ public class Card {
     private String value;
     private Image cardImage;
     private int count;
-    private int x;
+    private int x; 
     private int y;
-    private int CardHeight = 100;
-    private int CardWeight = 80;
-    private Image imagebackground = Toolkit.getDefaultToolkit().getImage("D://Java_21point/background.jpg");
+    private int CardHeight = 100; //撲克牌長度
+    private int CardWeight = 80; //撲克牌寬度
+    private Image CardBackground = Toolkit.getDefaultToolkit().getImage("card_background.jpg"); //撲克牌背面圖案
 
     public Card(String color, String value, Image cardImage) {
         this.color = color;
         this.value = value;
         this.cardImage = cardImage;
+        // J Q K 都當作10點 
         if (value == "J" || value == "Q" || value == "K") {
             this.count = 10;
+        // A為1點
         } else if (value == "A") {
             this.count = 1;
         } else {
@@ -45,7 +47,7 @@ public class Card {
     }
 
     public void drawBackgroundCard(Graphics g, JPanel i) {
-        g.drawImage(imagebackground, x, y, CardWeight, CardHeight, (ImageObserver) i);
+        g.drawImage(CardBackground, x, y, CardWeight, CardHeight, (ImageObserver) i);
     }
 
     public String getColor() {
@@ -59,7 +61,6 @@ public class Card {
     public int getCount() {
         return count;
     }
-
     public void print() {
         System.out.print("Suit " + color);
         System.out.print("num " + value);
